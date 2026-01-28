@@ -2,7 +2,6 @@ import { useState } from "react";
 import CarouselStack from "./components/CarouselStack";
 import { AnimationSettings } from "./components/SettingsPanel";
 
-// 이 줄에 export를 붙여서 에러를 해결합니다.
 export interface Product {
   url: string;
   image: string;
@@ -43,6 +42,7 @@ export default function App() {
           <CarouselStack settings={settings} products={products} />
         </div>
       </div>
+      {/* SettingsPanel은 렌더링하지 않음 */}
     </div>
   );
 }
