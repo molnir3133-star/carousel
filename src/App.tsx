@@ -1,13 +1,9 @@
 import { useState } from "react";
 import CarouselStack from "./components/CarouselStack";
-import { SettingsPanel, AnimationSettings } from "./components/SettingsPanel";
+// AnimationSettings 타입 정의를 위해 import는 유지하거나 직접 정의합니다.
+import { AnimationSettings } from "./components/SettingsPanel";
 
-export interface Product {
-  url: string;
-  image: string;
-}
-
-const products: Product[] = [
+const products = [
   { url: "https://www.flosecret.com/product-page/jeux-de-liens-mother-of-pearl-lab-diamond", image: "https://static.wixstatic.com/media/667148_6f71e821a95b44c5a4874b19f281c626~mv2.jpeg/v1/fill/w_498,h_748,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/667148_6f71e821a95b44c5a4874b19f281c626~mv2.jpeg" },
   { url: "https://www.flosecret.com/product-page/7-clash-de-small", image: "https://static.wixstatic.com/media/667148_fe03d05cc40e4a6c82ea0430d1b03182~mv2.jpeg/v1/fill/w_498,h_748,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/667148_fe03d05cc40e4a6c82ea0430d1b03182~mv2.jpeg" },
   { url: "https://www.flosecret.com/product-page/frivole-earrings-small-lab-diamond", image: "https://static.wixstatic.com/media/667148_30d243ca5dd04136ad4fd99a6ece796d~mv2.jpg/v1/fill/w_498,h_665,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/667148_30d243ca5dd04136ad4fd99a6ece796d~mv2.jpg" },
@@ -25,7 +21,8 @@ const products: Product[] = [
 ];
 
 export default function App() {
-  const [settings, setSettings] = useState<AnimationSettings>({
+  // 설정값은 그대로 유지하되(CarouselStack에 전달해야 하므로), 변경 함수만 제거합니다.
+  const [settings] = useState<AnimationSettings>({
     springDuration: 0.3,
     springBounce: 0.3,
     xSpringDuration: 0.5,
@@ -42,10 +39,7 @@ export default function App() {
           <CarouselStack settings={settings} products={products} />
         </div>
       </div>
-      <SettingsPanel
-        settings={settings}
-        onSettingsChange={setSettings}
-      />
+      {/* SettingsPanel 컴포넌트를 여기서 삭제했습니다. */}
     </div>
   );
 }
