@@ -26,23 +26,29 @@ const products: Product[] = [
 
 export default function App() {
   const [settings] = useState<AnimationSettings>({
-    springDuration: 0.3,
-    springBounce: 0.3,
+    springDuration: 0.4,
+    springBounce: 0.1,
     xSpringDuration: 0.5,
-    xSpringBounce: 0.1,
-    dragElastic: 0.7,
-    swipeConfidenceThreshold: 10000,
+    xSpringBounce: 0,
+    dragElastic: 0.05, // 드래그 시 늘어지는 느낌 감소
+    swipeConfidenceThreshold: 1000, // 더 살짝만 밀어도 넘어가게 설정
     zIndexDelay: 0.05,
   });
 
   return (
-    <div className="App w-full h-screen bg-gray-50 flex items-center justify-center overflow-hidden relative">
-      <div className="hero-container w-full h-full flex items-center justify-center">
-        <div className="container flex items-center justify-center">
-          <CarouselStack settings={settings} products={products} />
-        </div>
-      </div>
-      {/* SettingsPanel은 렌더링하지 않음 */}
+    // touchAction: 'none'으로 브라우저 스크롤 간섭 차단
+    <div className="App" style={{ 
+      width: '100vw', 
+      height: '100vh', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      overflow: 'hidden',
+      touchAction: 'none',
+      position: 'fixed',
+      inset: 0
+    }}>
+      <CarouselStack settings={settings} products={products} />
     </div>
   );
 }
