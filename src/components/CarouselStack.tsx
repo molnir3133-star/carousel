@@ -1,38 +1,42 @@
-import { AnimationSettings } from "./components/SettingsPanel";
-// (마찬가지로 타입을 SettingsPanel에서 가져오도록 통일합니다)
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Product } from "../App";
-import { AnimationSettings } from "./SettingsPanel";
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Product, AnimationSettings } from '../App';
 
-type Props = {
+interface Props {
   products: Product[];
   settings: AnimationSettings;
-};
+}
 
 const CarouselStack: React.FC<Props> = ({ products, settings }) => {
-  const [index, setIndex] = useState(0);
-
-  const next = () => setIndex((prev) => (prev + 1) % products.length);
-
   return (
-    <div className="relative w-64 h-96">
+    <div style={{ display: 'flex', gap: '20px', padding: '40px', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
       <AnimatePresence>
-        <motion.div
-          key={index}
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          onDragEnd={(_, info) => {
-            if (info.offset.x < -settings.swipeConfidenceThreshold / 100) next();
-          }}
-          initial={{ x: 100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: -100, opacity: 0 }}
-          transition={{ duration: settings.springDuration }}
-          className="absolute inset-0 bg-white rounded-2xl shadow-xl overflow-hidden cursor-grab active:cursor-grabbing"
-        >
-          <img src={products[index].image} alt="" className="w-full h-full object-cover pointer-events-none" />
-        </motion.div>
+        {products.map((product, index) => (
+          <motion.div
+            key={product.id}
+            initial={{ opacity: 0, y: 50, rotate: -settings.rotation }}
+            animate={{ 
+              opacity: 1, 
+              y: 0, 
+              rotate: 0,
+              transition: { delay: index * settings.stagger, duration: settings.duration }
+            }}
+            whileHover={{ scale: 1.05 }}
+            style={{
+              width: '200px',
+              backgroundColor: 'white',
+              borderRadius: '15px',
+              overflow: 'hidden',
+              boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
+            }}
+          >
+            <img src={product.image} alt={product.name} style={{ width: '100%', height: '150px', objectFit: 'cover' }} />
+            <div style={{ padding: '15px' }}>
+              <h3 style={{ margin: '0 0 5px 0', fontSize: '16px' }}>{product.name}</h3>
+              <p style={{ margin: 0, color: '#666' }}>{product.price}</p>
+            </div>
+          </motion.div>
+        ))}
       </AnimatePresence>
     </div>
   );
