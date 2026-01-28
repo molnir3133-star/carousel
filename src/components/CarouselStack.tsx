@@ -36,7 +36,7 @@ const CarouselStack: React.FC<Props> = ({ products, setProducts, onLike }) => {
 
   return (
     <div style={{ position: 'relative', width: '90vw', height: '75vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <AnimatePresence>
+      <AnimatePresence mode="popLayout">
         {products.slice(0, 3).reverse().map((product, revIndex) => {
           const index = (products.length > 3 ? 2 : products.length - 1) - revIndex;
           const isTop = index === 0;
@@ -45,50 +45,62 @@ const CarouselStack: React.FC<Props> = ({ products, setProducts, onLike }) => {
             <motion.div
               key={product.url}
               layoutId={product.url}
+              // 타원형 방지를 위해 borderRadius 고정 및 layout 속성 추가
+              layout
               style={{
                 position: 'absolute', width: '100%', height: '100%',
-                borderRadius: '30px', backgroundColor: '#fff',
+                borderRadius: '20px', backgroundColor: '#fff',
                 boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
-                display: 'flex', flexDirection: 'column', overflow: 'hidden'
+                display: 'flex', flexDirection: 'column', overflow: 'hidden',
+                // 가로세로 비율 유지 강제
+                aspectRatio: 'unset' 
               }}
               animate={{
                 scale: 1 - index * 0.05,
                 y: index * 15,
                 zIndex: 50 - index,
-                opacity: 1 - index * 0.2
+                opacity: 1 - index * 0.2,
+                borderRadius: '20px' // 애니메이션 중에도 사각형 유지
               }}
-              exit={{ x: direction * 500, opacity: 0, rotate: direction * 20 }}
+              exit={{ 
+                x: direction * 500, 
+                opacity: 0, 
+                rotate: direction * 20,
+                borderRadius: '20px' 
+              }}
               drag={isTop ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
               onDragEnd={handleDragEnd}
             >
-              {/* 이미지: 카드 전체를 채움 */}
-              <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+              <div style={{ position: 'relative', width: '100%', height: '100%', borderRadius: '20px', overflow: 'hidden' }}>
                 <img 
                   src={product.image} 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} // 전체 화면 채우기
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'cover',
+                    borderRadius: '20px' // 이미지 자체에도 동일한 곡률 적용
+                  }} 
                   draggable={false} 
                 />
                 
-                {/* 하단 텍스트 그라데이션 오버레이 */}
                 <div style={{
                   position: 'absolute', bottom: 0, left: 0, right: 0,
-                  height: '40%',
+                  height: '45%',
                   background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)',
                   display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
                   padding: '30px 20px', textAlign: 'center'
                 }}>
-                  <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '800', margin: '0 0 15px 0', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+                  <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '800', margin: '0 0 15px 0' }}>
                     {formatName(product.url)}
                   </h3>
                   
-                  {/* 상세 페이지 이동 버튼 */}
                   <button 
                     onClick={() => window.open(product.url, '_blank')}
                     style={{
-                      padding: '12px', borderRadius: '15px', border: 'none',
+                      padding: '12px', borderRadius: '12px', border: 'none',
                       backgroundColor: '#fff', color: '#000', fontWeight: 'bold',
-                      fontSize: '14px', cursor: 'pointer', boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                      fontSize: '14px', cursor: 'pointer'
                     }}
                   >
                     VIEW DETAILS
