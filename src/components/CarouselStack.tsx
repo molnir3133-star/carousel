@@ -17,11 +17,11 @@ const CarouselStack: React.FC<Props> = ({ products, setProducts, onLike }) => {
   };
 
   const handleDragEnd = (_: any, info: any) => {
-    if (info.offset.x > 70) { 
+    if (info.offset.x > 80) { 
       setDirection(1);
       onLike(products[0]);
       removeTopCard();
-    } else if (info.offset.x < -70) { 
+    } else if (info.offset.x < -80) { 
       setDirection(-1);
       removeTopCard();
     }
@@ -35,7 +35,7 @@ const CarouselStack: React.FC<Props> = ({ products, setProducts, onLike }) => {
   };
 
   return (
-    <div style={{ position: 'relative', width: '85vw', height: '60vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ position: 'relative', width: '90vw', height: '75vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <AnimatePresence>
         {products.slice(0, 3).reverse().map((product, revIndex) => {
           const index = (products.length > 3 ? 2 : products.length - 1) - revIndex;
@@ -47,35 +47,53 @@ const CarouselStack: React.FC<Props> = ({ products, setProducts, onLike }) => {
               layoutId={product.url}
               style={{
                 position: 'absolute', width: '100%', height: '100%',
-                borderRadius: '25px', backgroundColor: 'white',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.08)',
-                display: 'flex', flexDirection: 'column', overflow: 'hidden',
-                border: '1px solid #f5f5f5'
+                borderRadius: '30px', backgroundColor: '#fff',
+                boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+                display: 'flex', flexDirection: 'column', overflow: 'hidden'
               }}
               animate={{
                 scale: 1 - index * 0.05,
-                y: index * 12,
+                y: index * 15,
                 zIndex: 50 - index,
-                opacity: 1
+                opacity: 1 - index * 0.2
               }}
-              exit={{ x: direction * 500, opacity: 0, rotate: direction * 15 }}
+              exit={{ x: direction * 500, opacity: 0, rotate: direction * 20 }}
               drag={isTop ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
               onDragEnd={handleDragEnd}
             >
-              <div 
-                style={{ flex: 1, padding: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                onClick={() => isTop && window.open(product.url, '_blank')}
-              >
-                <img src={product.image} style={{ width: '100%', height: '100%', objectFit: 'contain' }} draggable={false} />
-              </div>
-              <div style={{ padding: '20px', textAlign: 'center', backgroundColor: '#fff' }}>
-                <h3 style={{ fontSize: '13px', fontWeight: '700', color: '#111', margin: '0 0 5px 0' }}>
-                  {formatName(product.url)}
-                </h3>
-                <p style={{ fontSize: '9px', color: '#999', margin: 0, letterSpacing: '1px' }}>
-                  {isTop ? "TAP IMAGE FOR DETAILS" : ""}
-                </p>
+              {/* 이미지: 카드 전체를 채움 */}
+              <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                <img 
+                  src={product.image} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} // 전체 화면 채우기
+                  draggable={false} 
+                />
+                
+                {/* 하단 텍스트 그라데이션 오버레이 */}
+                <div style={{
+                  position: 'absolute', bottom: 0, left: 0, right: 0,
+                  height: '40%',
+                  background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)',
+                  display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+                  padding: '30px 20px', textAlign: 'center'
+                }}>
+                  <h3 style={{ color: '#fff', fontSize: '18px', fontWeight: '800', margin: '0 0 15px 0', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>
+                    {formatName(product.url)}
+                  </h3>
+                  
+                  {/* 상세 페이지 이동 버튼 */}
+                  <button 
+                    onClick={() => window.open(product.url, '_blank')}
+                    style={{
+                      padding: '12px', borderRadius: '15px', border: 'none',
+                      backgroundColor: '#fff', color: '#000', fontWeight: 'bold',
+                      fontSize: '14px', cursor: 'pointer', boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                    }}
+                  >
+                    VIEW DETAILS
+                  </button>
+                </div>
               </div>
             </motion.div>
           );
