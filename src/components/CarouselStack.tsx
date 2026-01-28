@@ -11,13 +11,17 @@ interface Props {
 const CarouselStack: React.FC<Props> = ({ products, setProducts, onLike }) => {
   const [direction, setDirection] = useState(0);
 
+  const formatName = (url: string) => {
+    const slug = url.split('/').pop() || "";
+    return slug.replace(/-/g, ' ').toUpperCase();
+  };
+
   const handleDragEnd = (_: any, info: any) => {
-    if (info.offset.x > 80) { // 오른쪽: 좋아요
+    if (info.offset.x > 70) { 
       setDirection(1);
-      const likedItem = products[0];
-      onLike(likedItem);
+      onLike(products[0]);
       removeTopCard();
-    } else if (info.offset.x < -80) { // 왼쪽: 패스
+    } else if (info.offset.x < -70) { 
       setDirection(-1);
       removeTopCard();
     }
@@ -25,13 +29,13 @@ const CarouselStack: React.FC<Props> = ({ products, setProducts, onLike }) => {
 
   const removeTopCard = () => {
     setTimeout(() => {
-      setProducts((prev) => prev.slice(1)); // 맨 위 카드 제거
+      setProducts((prev) => prev.slice(1));
       setDirection(0);
     }, 50);
   };
 
   return (
-    <div style={{ position: 'relative', width: '85vw', height: '65vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ position: 'relative', width: '85vw', height: '60vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <AnimatePresence>
         {products.slice(0, 3).reverse().map((product, revIndex) => {
           const index = (products.length > 3 ? 2 : products.length - 1) - revIndex;
@@ -43,54 +47,40 @@ const CarouselStack: React.FC<Props> = ({ products, setProducts, onLike }) => {
               layoutId={product.url}
               style={{
                 position: 'absolute', width: '100%', height: '100%',
-                borderRadius: '30px', backgroundColor: 'white',
-                boxShadow: '0 15px 40px rgba(0,0,0,0.12)',
+                borderRadius: '25px', backgroundColor: 'white',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.08)',
                 display: 'flex', flexDirection: 'column', overflow: 'hidden',
-                border: '1px solid #f0f0f0', cursor: isTop ? 'grab' : 'default'
+                border: '1px solid #f5f5f5'
               }}
               animate={{
                 scale: 1 - index * 0.05,
-                y: index * 15,
+                y: index * 12,
                 zIndex: 50 - index,
                 opacity: 1
               }}
-              exit={{ 
-                x: direction * 500, 
-                opacity: 0, 
-                rotate: direction * 25,
-                transition: { duration: 0.4 } 
-              }}
+              exit={{ x: direction * 500, opacity: 0, rotate: direction * 15 }}
               drag={isTop ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
               onDragEnd={handleDragEnd}
             >
               <div 
-                style={{ flex: 1, padding: '20px', backgroundColor: '#fff' }}
-                onClick={() => isTop && window.open(product.url, '_blank')} // 클릭 시 전체화면(새창)
+                style={{ flex: 1, padding: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                onClick={() => isTop && window.open(product.url, '_blank')}
               >
                 <img src={product.image} style={{ width: '100%', height: '100%', objectFit: 'contain' }} draggable={false} />
               </div>
-              <div style={{ padding: '20px', textAlign: 'center', borderTop: '1px solid #fafafa' }}>
-                <p style={{ fontSize: '14px', fontWeight: '800', color: '#111', margin: 0 }}>
-                  {product.url.split('/').pop()?.replace(/-/g, ' ').toUpperCase()}
-                </p>
-                <p style={{ fontSize: '10px', color: '#ff4d4d', marginTop: '5px' }}>
-                  {isTop ? "Swipe Right to Wishlist →" : ""}
+              <div style={{ padding: '20px', textAlign: 'center', backgroundColor: '#fff' }}>
+                <h3 style={{ fontSize: '13px', fontWeight: '700', color: '#111', margin: '0 0 5px 0' }}>
+                  {formatName(product.url)}
+                </h3>
+                <p style={{ fontSize: '9px', color: '#999', margin: 0, letterSpacing: '1px' }}>
+                  {isTop ? "TAP IMAGE FOR DETAILS" : ""}
                 </p>
               </div>
             </motion.div>
           );
         })}
       </AnimatePresence>
-      
-      {products.length === 0 && (
-        <button 
-          onClick={() => window.location.reload()}
-          style={{ padding: '12px 24px', borderRadius: '20px', border: '1px solid #000', background: '#000', color: '#fff' }}
-        >
-          RELOAD CARDS
-        </button>
-      )}
     </div>
   );
 };
