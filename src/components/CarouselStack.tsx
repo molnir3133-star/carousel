@@ -10,10 +10,9 @@ interface Props {
 const CarouselStack: React.FC<Props> = ({ products: initialProducts, settings }) => {
   const [stack, setStack] = useState(initialProducts);
 
-  // 드래그가 끝났을 때 카드를 뒤로 보내는 로직
   const handleDragEnd = (_: any, info: any) => {
-    // 좌우로 100픽셀 이상 밀었을 때 작동
-    if (Math.abs(info.offset.x) > 100) {
+    // 민감도 조절: 50픽셀만 움직여도 다음 카드로 전환
+    if (Math.abs(info.offset.x) > 50 || Math.abs(info.velocity.x) > 500) {
       setStack((prev) => {
         const newStack = [...prev];
         const first = newStack.shift();
@@ -23,17 +22,24 @@ const CarouselStack: React.FC<Props> = ({ products: initialProducts, settings })
     }
   };
 
-  // URL에서 제품명을 예쁘게 추출하는 함수
   const formatName = (url: string) => {
     const slug = url.split('/').pop() || "";
     return slug.replace(/-/g, ' ').toUpperCase();
   };
 
   return (
-    <div style={{ position: 'relative', width: '320px', height: '500px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ 
+      position: 'relative', 
+      width: '280px', // 모바일 너비 최적화
+      height: '440px', 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center' 
+    }}>
       <AnimatePresence initial={false}>
-        {stack.map((product, index) => {
-          // 맨 위의 카드만 드래그 가능하게 설정
+        {stack.slice(0, 4).reverse().map((product, revIndex) => {
+          // 배열을 뒤집었으므로 실제 인덱스 계산
+          const index = 3 - revIndex;
           const isTop = index === 0;
           
           return (
@@ -43,68 +49,71 @@ const CarouselStack: React.FC<Props> = ({ products: initialProducts, settings })
                 position: 'absolute',
                 width: '100%',
                 height: '100%',
-                borderRadius: '24px',
+                borderRadius: '20px',
                 backgroundColor: 'white',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                boxShadow: '0 8px 20px rgba(0,0,0,0.12)',
                 overflow: 'hidden',
                 cursor: isTop ? 'grab' : 'default',
                 display: 'flex',
                 flexDirection: 'column',
-                border: '1px solid #eee'
+                border: '1px solid #f0f0f0',
+                touchAction: 'none' // 개별 카드 터치 간섭 방지
               }}
-              // 스택 겹침 애니메이션
               animate={{
-                scale: 1 - index * 0.05,
+                scale: 1 - index * 0.06,
                 y: index * 12,
-                zIndex: stack.length - index,
-                opacity: index > 3 ? 0 : 1 // 4번째 카드부터는 숨김처리하여 깔끔하게 유지
+                zIndex: 10 - index,
+                opacity: 1 - index * 0.2
+              }}
+              exit={{ 
+                x: isTop ? (stack[0] === product ? -300 : 0) : 0, 
+                opacity: 0,
+                transition: { duration: 0.3 } 
               }}
               transition={{
                 type: "spring",
-                duration: settings.springDuration,
-                bounce: settings.springBounce
+                stiffness: 250,
+                damping: 25
               }}
               drag={isTop ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
               onDragEnd={handleDragEnd}
-              whileTap={isTop ? { scale: 1.02, cursor: 'grabbing' } : {}}
+              whileTap={isTop ? { scale: 1.02 } : {}}
             >
-              {/* 이미지 섹션 */}
-              <div style={{ flex: 1, overflow: 'hidden' }}>
+              {/* 이미지 영역 */}
+              <div style={{ flex: 1, backgroundColor: '#f9f9f9', overflow: 'hidden' }}>
                 <img 
                   src={product.image} 
                   alt="jewelry" 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'contain' }} // 제품이 잘리지 않게 조정
                   draggable={false} 
                 />
               </div>
 
-              {/* 텍스트 정보 섹션 */}
-              <div style={{ padding: '20px', textAlign: 'center', backgroundColor: '#fff' }}>
+              {/* 텍스트 영역 */}
+              <div style={{ padding: '15px', textAlign: 'center', backgroundColor: '#fff' }}>
                 <h3 style={{ 
-                  margin: '0 0 12px 0', 
-                  fontSize: '13px', 
+                  margin: '0 0 10px 0', 
+                  fontSize: '12px', 
                   fontWeight: 600, 
-                  color: '#222',
-                  letterSpacing: '0.5px',
-                  lineHeight: '1.4'
+                  color: '#111',
+                  height: '34px', // 두 줄까지 허용
+                  overflow: 'hidden'
                 }}>
                   {formatName(product.url)}
                 </h3>
                 <button 
                   onClick={() => window.open(product.url, '_blank')}
                   style={{
-                    padding: '8px 20px',
-                    borderRadius: '20px',
-                    border: '1px solid #222',
-                    backgroundColor: 'transparent',
-                    fontSize: '11px',
-                    fontWeight: 500,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
+                    padding: '8px 15px',
+                    borderRadius: '15px',
+                    border: '1px solid #111',
+                    backgroundColor: '#111',
+                    color: '#fff',
+                    fontSize: '10px',
+                    width: '100%',
+                    fontWeight: 500
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f0f0f0')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                 >
                   SHOP NOW
                 </button>
@@ -113,11 +122,6 @@ const CarouselStack: React.FC<Props> = ({ products: initialProducts, settings })
           );
         })}
       </AnimatePresence>
-      
-      {/* 하단 스와이프 안내 (선택 사항) */}
-      <span style={{ position: 'absolute', bottom: '-40px', fontSize: '11px', color: '#aaa' }}>
-        SWIPE CARDS TO EXPLORE
-      </span>
     </div>
   );
 };
