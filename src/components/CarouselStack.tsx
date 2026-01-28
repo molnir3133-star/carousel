@@ -1,40 +1,38 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Product, AnimationSettings } from '../App';
+import { Product } from '../App';
 
 interface Props {
   products: Product[];
-  settings: AnimationSettings;
+  settings: any;
 }
 
 const CarouselStack: React.FC<Props> = ({ products, settings }) => {
   return (
-    <div style={{ display: 'flex', gap: '20px', padding: '40px', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+    <div style={{ position: 'relative', width: '300px', height: '400px' }}>
       <AnimatePresence>
         {products.map((product, index) => (
           <motion.div
-            key={product.id}
-            initial={{ opacity: 0, y: 50, rotate: -settings.rotation }}
-            animate={{ 
-              opacity: 1, 
-              y: 0, 
-              rotate: 0,
-              transition: { delay: index * settings.stagger, duration: settings.duration }
-            }}
-            whileHover={{ scale: 1.05 }}
+            key={product.url}
             style={{
-              width: '200px',
-              backgroundColor: 'white',
-              borderRadius: '15px',
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              cursor: 'pointer',
+              borderRadius: '20px',
               overflow: 'hidden',
-              boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
+              boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
             }}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1 - index * 0.05, y: index * 10, zIndex: products.length - index, opacity: 1 }}
+            whileHover={{ y: -10, transition: { duration: 0.2 } }}
+            onClick={() => window.open(product.url, '_blank')}
           >
-            <img src={product.image} alt={product.name} style={{ width: '100%', height: '150px', objectFit: 'cover' }} />
-            <div style={{ padding: '15px' }}>
-              <h3 style={{ margin: '0 0 5px 0', fontSize: '16px' }}>{product.name}</h3>
-              <p style={{ margin: 0, color: '#666' }}>{product.price}</p>
-            </div>
+            <img 
+              src={product.image} 
+              alt="product" 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+            />
           </motion.div>
         ))}
       </AnimatePresence>
