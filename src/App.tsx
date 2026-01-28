@@ -7,6 +7,7 @@ export interface Product {
   image: string;
 }
 
+// 1. 기존 14개 제품 데이터 (메모리 완료)
 const initialProducts: Product[] = [
   { url: "https://www.flosecret.com/product-page/jeux-de-liens-mother-of-pearl-lab-diamond", image: "https://static.wixstatic.com/media/667148_6f71e821a95b44c5a4874b19f281c626~mv2.jpeg/v1/fill/w_498,h_748,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/667148_6f71e821a95b44c5a4874b19f281c626~mv2.jpeg" },
   { url: "https://www.flosecret.com/product-page/7-clash-de-small", image: "https://static.wixstatic.com/media/667148_fe03d05cc40e4a6c82ea0430d1b03182~mv2.jpeg/v1/fill/w_498,h_748,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/667148_fe03d05cc40e4a6c82ea0430d1b03182~mv2.jpeg" },
@@ -28,6 +29,7 @@ export default function App() {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [likedProducts, setLikedProducts] = useState<Product[]>([]);
 
+  // 찜 목록 아이템 클릭 시 다시 메인 카스택으로 복구하는 함수
   const restoreProduct = (product: Product) => {
     setProducts(prev => [product, ...prev]);
     setLikedProducts(prev => prev.filter(p => p.url !== product.url));
@@ -37,7 +39,7 @@ export default function App() {
     <div style={{ 
       width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
-      touchAction: 'none', position: 'fixed', backgroundColor: '#000' // 배경 블랙으로 고급화
+      touchAction: 'none', position: 'fixed', backgroundColor: '#000' 
     }}>
       <CarouselStack 
         products={products} 
@@ -45,18 +47,28 @@ export default function App() {
         onLike={(p) => setLikedProducts(prev => [p, ...prev])}
       />
 
-      {/* 하단 찜한 목록 */}
+      {/* 하단 찜한 목록 영역 */}
       <div style={{ position: 'absolute', bottom: '25px', width: '100%', zIndex: 100 }}>
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', padding: '0 20px' }}>
           <AnimatePresence>
             {likedProducts.map((p) => (
               <motion.img 
                 key={p.url}
-                layoutId={p.url}
-                initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+                layoutId={p.url} // 카드와 애니메이션 연결
+                initial={{ scale: 0 }} 
+                animate={{ scale: 1 }} 
+                exit={{ scale: 0 }}
                 src={p.image} 
                 onClick={() => restoreProduct(p)}
-                style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #fff', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }} 
+                style={{ 
+                  width: '45px', 
+                  height: '45px', 
+                  borderRadius: '12px', // 사각형 디자인 유지 (타원 방지)
+                  objectFit: 'cover', 
+                  border: '2px solid #fff', 
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+                }} 
               />
             ))}
           </AnimatePresence>
