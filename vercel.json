@@ -5,7 +5,11 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "frame-ancestors 'self' https://*.wix.com https://*.wixeditor.com https://editor.wix.com https://www.flosecret.com;"
+          "value": "frame-ancestors 'self' https://*.wix.com https://*.wixeditor.com https://editor.wix.com http://*.wix.com;"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "ALLOWALL"
         }
       ]
     }
