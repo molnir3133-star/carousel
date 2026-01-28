@@ -44,42 +44,43 @@ const CarouselStack: React.FC<Props> = ({ products, setProducts, onLike }) => {
           return (
             <motion.div
               key={product.url}
-              layoutId={product.url}
-              // 타원형 방지를 위해 borderRadius 고정 및 layout 속성 추가
-              layout
+              // layoutId를 유지하되, 형태(Shape) 왜곡을 막기 위해 layout 속성을 'position'으로 제한합니다.
+              layout="position" 
               style={{
                 position: 'absolute', width: '100%', height: '100%',
-                borderRadius: '20px', backgroundColor: '#fff',
+                backgroundColor: '#fff',
                 boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
-                display: 'flex', flexDirection: 'column', overflow: 'hidden',
-                // 가로세로 비율 유지 강제
-                aspectRatio: 'unset' 
+                display: 'flex', flexDirection: 'column', 
+                overflow: 'hidden',
+                borderRadius: '20px', // 기본값 설정
+                zIndex: 50 - index,
               }}
               animate={{
                 scale: 1 - index * 0.05,
                 y: index * 15,
-                zIndex: 50 - index,
                 opacity: 1 - index * 0.2,
-                borderRadius: '20px' // 애니메이션 중에도 사각형 유지
+                borderRadius: '20px', // 애니메이션 중에도 사각형 강제
               }}
               exit={{ 
                 x: direction * 500, 
                 opacity: 0, 
                 rotate: direction * 20,
-                borderRadius: '20px' 
+                borderRadius: '20px', // 사라질 때도 타원형 방지
+                transition: { duration: 0.3 }
               }}
               drag={isTop ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
               onDragEnd={handleDragEnd}
             >
-              <div style={{ position: 'relative', width: '100%', height: '100%', borderRadius: '20px', overflow: 'hidden' }}>
-                <img 
+              <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+                <motion.img 
+                  layout="position" // 이미지 형태 왜곡 방지
                   src={product.image} 
                   style={{ 
                     width: '100%', 
                     height: '100%', 
                     objectFit: 'cover',
-                    borderRadius: '20px' // 이미지 자체에도 동일한 곡률 적용
+                    borderRadius: '20px' 
                   }} 
                   draggable={false} 
                 />
@@ -87,7 +88,7 @@ const CarouselStack: React.FC<Props> = ({ products, setProducts, onLike }) => {
                 <div style={{
                   position: 'absolute', bottom: 0, left: 0, right: 0,
                   height: '45%',
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%)',
+                  background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%)',
                   display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
                   padding: '30px 20px', textAlign: 'center'
                 }}>
